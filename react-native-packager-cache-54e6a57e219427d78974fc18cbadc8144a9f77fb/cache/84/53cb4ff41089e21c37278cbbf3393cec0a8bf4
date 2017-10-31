@@ -1,0 +1,75 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _reactNative = require('react-native');
+
+var _reactNavigation = require('react-navigation');
+
+var FormHeader = function (_Component) {
+  babelHelpers.inherits(FormHeader, _Component);
+
+  function FormHeader() {
+    babelHelpers.classCallCheck(this, FormHeader);
+    return babelHelpers.possibleConstructorReturn(this, (FormHeader.__proto__ || Object.getPrototypeOf(FormHeader)).apply(this, arguments));
+  }
+
+  babelHelpers.createClass(FormHeader, [{
+    key: '_onPressButton',
+    value: function _onPressButton() {
+      _reactNative.Alert.alert('You tapped the button!');
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        _reactNative.View,
+        { style: styles.container },
+        _react2.default.createElement(
+          _reactNative.View,
+          { style: styles.margin_header },
+          _react2.default.createElement(
+            _reactNative.Text,
+            { style: styles.title, onPress: function onPress() {
+                return _this2._onPressButton();
+              } },
+            'Go Dongeng'
+          )
+        )
+      );
+    }
+  }]);
+  return FormHeader;
+}(_react.Component);
+
+exports.default = FormHeader;
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#ffffff',
+    flexDirection: 'row'
+  },
+  title: {
+    fontWeight: 'bold',
+    color: '#2980b9',
+    alignSelf: 'center',
+    fontSize: 35,
+    paddingTop: 3
+  },
+  margin_header: {
+    marginTop: 25,
+    flex: 1,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  }
+});

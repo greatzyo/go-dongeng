@@ -1,0 +1,189 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _jsxFileName = '/home/dhamaddam/AndroidStudioProjects/go-dongeng/Pages/Home.js';
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _reactNative = require('react-native');
+
+var _reactNavigation = require('react-navigation');
+
+var _styles = require('./styles');
+
+var _styles2 = babelHelpers.interopRequireDefault(_styles);
+
+var _FormHeader = require('./FormHeader');
+
+var _FormHeader2 = babelHelpers.interopRequireDefault(_FormHeader);
+
+var _ReadScreen = require('./ReadScreen');
+
+var _ReadScreen2 = babelHelpers.interopRequireDefault(_ReadScreen);
+
+var Home = function (_Component) {
+  babelHelpers.inherits(Home, _Component);
+
+  function Home(props) {
+    babelHelpers.classCallCheck(this, Home);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
+
+    _this.ListViewItemSeparator = function () {
+      return _react2.default.createElement(_reactNative.View, {
+        style: {
+          height: .5,
+          width: "100%",
+          backgroundColor: "#000"
+        },
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 61
+        }
+      });
+    };
+
+    _this.state = {
+      isLoading: true
+    };
+    return _this;
+  }
+
+  babelHelpers.createClass(Home, [{
+    key: 'GetItem',
+    value: function GetItem(flower_name) {
+
+      _reactNative.Alert.alert(flower_name);
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      return fetch('http://go-dongeng.com/ajax/show_all_article').then(function (response) {
+        return response.json();
+      }).then(function (responseJson) {
+        var ds = new _reactNative.ListView.DataSource({ rowHasChanged: function rowHasChanged(r1, r2) {
+            return r1 !== r2;
+          } });
+        _this2.setState({
+          isLoading: false,
+          dataSource: ds.cloneWithRows(responseJson)
+        }, function () {});
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      var navigate = this.props.navigation.navigate;
+
+      if (this.state.isLoading) {
+        return _react2.default.createElement(
+          _reactNative.View,
+          { style: { flex: 1, paddingTop: 20 }, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 77
+            }
+          },
+          _react2.default.createElement(_reactNative.ActivityIndicator, {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 78
+            }
+          })
+        );
+      }
+
+      return _react2.default.createElement(
+        _reactNative.View,
+        { style: styles.container, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 85
+          }
+        },
+        _react2.default.createElement(_FormHeader2.default, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 86
+          }
+        }),
+        _react2.default.createElement(_reactNative.ListView, {
+
+          dataSource: this.state.dataSource,
+
+          renderSeparator: this.ListViewItemSeparator,
+
+          renderRow: function renderRow(rowData) {
+            return _react2.default.createElement(
+              _reactNative.View,
+              { style: { flex: 1, flexDirection: 'row' }, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 95
+                }
+              },
+              _react2.default.createElement(
+                _reactNative.TouchableHighlight,
+                { onPress: function onPress() {
+                    return navigate('ReadScreen', { article_id: rowData.id_art_user_category });
+                  },
+                  style: _styles2.default.TouchImage, __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 96
+                  }
+                },
+                _react2.default.createElement(
+                  _reactNative.Image,
+                  { source: { uri: 'http://go-dongeng.com/assets/theme/default/images/content/' + rowData.picture }, style: _styles2.default.imageViewContainer, __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 98
+                    }
+                  },
+                  _react2.default.createElement(
+                    _reactNative.Text,
+                    { onPress: _this3.GetItem.bind(_this3, rowData.title), style: _styles2.default.textViewContainer, __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 99
+                      }
+                    },
+                    rowData.title
+                  )
+                )
+              )
+            );
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 87
+          }
+        })
+      );
+    }
+  }]);
+  return Home;
+}(_react.Component);
+
+Home.navigationOptions = {
+  header: null,
+  title: 'Home'
+};
+exports.default = Home;
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'lightgrey',
+    flexDirection: 'column'
+  }
+});
+
+_reactNative.AppRegistry.registerComponent('go-dongeng', function () {
+  return Home;
+});

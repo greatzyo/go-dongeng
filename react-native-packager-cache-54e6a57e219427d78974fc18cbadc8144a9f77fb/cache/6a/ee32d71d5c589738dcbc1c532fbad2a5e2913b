@@ -1,0 +1,126 @@
+
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var _jsxFileName = '/home/dhamaddam/AndroidStudioProjects/go-dongeng/node_modules/rn-viewpager/viewpager/indicator/PagerDotIndicator.js';
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = babelHelpers.interopRequireDefault(_propTypes);
+
+var _reactNative = require('react-native');
+
+var _IndicatorViewPager = require('../IndicatorViewPager');
+
+var _IndicatorViewPager2 = babelHelpers.interopRequireDefault(_IndicatorViewPager);
+
+var DEFAULT_DOT_RADIUS = 6;
+
+var PagerDotIndicator = function (_Component) {
+    babelHelpers.inherits(PagerDotIndicator, _Component);
+
+    function PagerDotIndicator() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
+        babelHelpers.classCallCheck(this, PagerDotIndicator);
+
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = babelHelpers.possibleConstructorReturn(this, (_ref = PagerDotIndicator.__proto__ || Object.getPrototypeOf(PagerDotIndicator)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+            selectedIndex: _this.props.initialPage
+        }, _temp), babelHelpers.possibleConstructorReturn(_this, _ret);
+    }
+
+    babelHelpers.createClass(PagerDotIndicator, [{
+        key: 'shouldComponentUpdate',
+        value: function shouldComponentUpdate(nextProps, nextState) {
+            return this.state.selectedIndex != nextState.selectedIndex || this.props.pageCount != nextProps.pageCount || this.props.dotStyle != nextProps.dotStyle || this.props.selectedDotStyle != nextProps.selectedDotStyle || this.props.style != nextProps.style;
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _props = this.props,
+                pageCount = _props.pageCount,
+                dotStyle = _props.dotStyle,
+                selectedDotStyle = _props.selectedDotStyle;
+
+            if (pageCount <= 0) return null;
+            if (this.props.hideSingle && pageCount == 1) return null;
+            var dotsView = [];
+            for (var i = 0; i < pageCount; i++) {
+                var isSelect = i === this.state.selectedIndex;
+                dotsView.push(_react2.default.createElement(_reactNative.View, {
+                    style: [styles.dot, isSelect ? styles.selectDot : null, isSelect ? selectedDotStyle : dotStyle],
+                    key: i,
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 49
+                    }
+                }));
+            }
+            return _react2.default.createElement(
+                _reactNative.View,
+                babelHelpers.extends({}, this.props, { style: [styles.container, this.props.style], __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 56
+                    }
+                }),
+                dotsView
+            );
+        }
+    }, {
+        key: 'onPageSelected',
+        value: function onPageSelected(e) {
+            this.setState({ selectedIndex: e.position });
+        }
+    }]);
+    return PagerDotIndicator;
+}(_react.Component);
+
+PagerDotIndicator.propTypes = babelHelpers.extends({}, _reactNative.View.propTypes, {
+    pageCount: _propTypes2.default.number.isRequired,
+    initialPage: _propTypes2.default.number,
+    pager: _propTypes2.default.instanceOf(_IndicatorViewPager2.default),
+    dotStyle: _reactNative.View.propTypes.style,
+    selectedDotStyle: _reactNative.View.propTypes.style,
+    hideSingle: _propTypes2.default.bool
+});
+PagerDotIndicator.defaultProps = {
+    pageCount: 0,
+    initialPage: 0,
+    hideSingle: false
+};
+exports.default = PagerDotIndicator;
+
+var styles = _reactNative.StyleSheet.create({
+    container: {
+        position: 'absolute',
+        bottom: 10,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    dot: {
+        width: DEFAULT_DOT_RADIUS,
+        height: DEFAULT_DOT_RADIUS,
+        borderRadius: DEFAULT_DOT_RADIUS >> 1,
+        backgroundColor: '#BBBBBB',
+        margin: DEFAULT_DOT_RADIUS >> 1
+    },
+    selectDot: {
+        backgroundColor: 'white'
+    }
+});

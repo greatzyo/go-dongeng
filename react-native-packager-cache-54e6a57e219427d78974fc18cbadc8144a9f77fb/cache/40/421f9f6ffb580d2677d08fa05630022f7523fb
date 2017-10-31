@@ -1,0 +1,173 @@
+
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var _jsxFileName = '/home/dhamaddam/AndroidStudioProjects/go-dongeng/node_modules/rn-viewpager/viewpager/IndicatorViewPager.js';
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = babelHelpers.interopRequireDefault(_propTypes);
+
+var _reactNative = require('react-native');
+
+var _ViewPager = require('./ViewPager');
+
+var _ViewPager2 = babelHelpers.interopRequireDefault(_ViewPager);
+
+var VIEWPAGER_REF = 'viewPager';
+var INDICATOR_REF = 'indicator';
+
+var IndicatorViewPager = function (_Component) {
+    babelHelpers.inherits(IndicatorViewPager, _Component);
+
+    function IndicatorViewPager(props) {
+        babelHelpers.classCallCheck(this, IndicatorViewPager);
+
+        var _this = babelHelpers.possibleConstructorReturn(this, (IndicatorViewPager.__proto__ || Object.getPrototypeOf(IndicatorViewPager)).call(this, props));
+
+        _this._onPageScroll = _this._onPageScroll.bind(_this);
+        _this._onPageSelected = _this._onPageSelected.bind(_this);
+        _this._goToNextPage = _this._goToNextPage.bind(_this);
+        _this._renderIndicator = _this._renderIndicator.bind(_this);
+        _this.setPage = _this.setPage.bind(_this);
+        _this.setPageWithoutAnimation = _this.setPageWithoutAnimation.bind(_this);
+        _this._startAutoPlay = _this._startAutoPlay.bind(_this);
+        _this._stopAutoPlay = _this._stopAutoPlay.bind(_this);
+        _this._currentIndex = props.initialPage;
+        _this._childrenCount = _react2.default.Children.count(props.children);
+        return _this;
+    }
+
+    babelHelpers.createClass(IndicatorViewPager, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            if (this.props.autoPlayEnable) this._startAutoPlay();else this._stopAutoPlay();
+        }
+    }, {
+        key: 'componentWillUpdate',
+        value: function componentWillUpdate(nextProps, nextState) {
+            this._childrenCount = _react2.default.Children.count(nextProps.children);
+            if (this.props.autoPlayEnable !== nextProps.autoPlayEnable) {
+                nextProps.autoPlayEnable ? this._startAutoPlay() : this._stopAutoPlay();
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                _reactNative.View,
+                { style: [styles.container, this.props.style], __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 60
+                    }
+                },
+                _react2.default.createElement(_ViewPager2.default, babelHelpers.extends({}, this.props, {
+                    horizontalScroll: this.props.horizontalScroll,
+                    ref: VIEWPAGER_REF,
+                    style: [styles.pager, this.props.pagerStyle],
+                    onPageScroll: this._onPageScroll,
+                    onPageSelected: this._onPageSelected,
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 61
+                    }
+                })),
+                this._renderIndicator()
+            );
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            this._stopAutoPlay();
+        }
+    }, {
+        key: '_onPageScroll',
+        value: function _onPageScroll(params) {
+            var indicator = this.refs[INDICATOR_REF];
+            indicator && indicator.onPageScroll && indicator.onPageScroll(params);
+            this.props.onPageScroll && this.props.onPageScroll(params);
+        }
+    }, {
+        key: '_onPageSelected',
+        value: function _onPageSelected(params) {
+            var indicator = this.refs[INDICATOR_REF];
+            indicator && indicator.onPageSelected && indicator.onPageSelected(params);
+            this.props.onPageSelected && this.props.onPageSelected(params);
+            this._currentIndex = params.position;
+        }
+    }, {
+        key: '_renderIndicator',
+        value: function _renderIndicator() {
+            var _props = this.props,
+                indicator = _props.indicator,
+                initialPage = _props.initialPage;
+
+            if (!indicator) return null;
+            return _react2.default.cloneElement(indicator, {
+                ref: INDICATOR_REF,
+                pager: this,
+                initialPage: initialPage
+            });
+        }
+    }, {
+        key: '_goToNextPage',
+        value: function _goToNextPage() {
+            var nextIndex = (this._currentIndex + 1) % this._childrenCount;
+            this.setPage(nextIndex);
+        }
+    }, {
+        key: '_startAutoPlay',
+        value: function _startAutoPlay() {
+            if (this._timerId) clearInterval(this._timerId);
+            this._timerId = setInterval(this._goToNextPage, this.props.autoPlayInterval);
+        }
+    }, {
+        key: '_stopAutoPlay',
+        value: function _stopAutoPlay() {
+            if (this._timerId) {
+                clearInterval(this._timerId);
+                this._timerId = null;
+            }
+        }
+    }, {
+        key: 'setPage',
+        value: function setPage(selectedPage) {
+            this.refs[VIEWPAGER_REF].setPage(selectedPage);
+        }
+    }, {
+        key: 'setPageWithoutAnimation',
+        value: function setPageWithoutAnimation(selectedPage) {
+            this.refs[VIEWPAGER_REF].setPageWithoutAnimation(selectedPage);
+        }
+    }]);
+    return IndicatorViewPager;
+}(_react.Component);
+
+IndicatorViewPager.propTypes = babelHelpers.extends({}, _ViewPager2.default.propTypes, {
+    indicator: _propTypes2.default.node,
+    pagerStyle: _reactNative.View.propTypes.style,
+    autoPlayEnable: _propTypes2.default.bool,
+    autoPlayInterval: _propTypes2.default.number,
+    horizontalScroll: _propTypes2.default.bool
+});
+IndicatorViewPager.defaultProps = {
+    indicator: null,
+    initialPage: 0,
+    autoPlayInterval: 3000,
+    autoPlayEnable: false,
+    horizontalScroll: true
+};
+exports.default = IndicatorViewPager;
+
+
+var styles = _reactNative.StyleSheet.create({
+    container: {},
+    pager: { flex: 1 }
+});

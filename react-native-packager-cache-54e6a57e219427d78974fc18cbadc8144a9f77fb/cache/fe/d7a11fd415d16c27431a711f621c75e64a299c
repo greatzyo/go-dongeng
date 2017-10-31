@@ -1,0 +1,207 @@
+
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _reactNative = require('react-native');
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var SCROLLVIEW_REF = 'scrollView';
+var VIEWPAGER_REF = 'viewPager';
+
+var SCROLL_STATE = {
+    idle: 'idle',
+    settling: 'settling',
+    dragging: 'dragging'
+};
+
+var ViewPager = function (_Component) {
+    babelHelpers.inherits(ViewPager, _Component);
+
+    function ViewPager(props) {
+        babelHelpers.classCallCheck(this, ViewPager);
+
+        var _this = babelHelpers.possibleConstructorReturn(this, (ViewPager.__proto__ || Object.getPrototypeOf(ViewPager)).call(this, props));
+
+        _this.state = { width: 0, height: 0 };
+        _this._scrollState = SCROLL_STATE.idle;
+        _this._preScrollX = null;
+        _this._panResponder = _reactNative.PanResponder.create({
+            onStartShouldSetPanResponder: function onStartShouldSetPanResponder() {
+                return true;
+            },
+            onMoveShouldSetPanResponder: function onMoveShouldSetPanResponder() {
+                return true;
+            },
+            onPanResponderGrant: function onPanResponderGrant() {
+                return _this._setScrollState(SCROLL_STATE.dragging);
+            },
+            onPanResponderMove: function onPanResponderMove() {
+                return null;
+            },
+            onPanResponderRelease: function onPanResponderRelease() {
+                return _this._setScrollState(SCROLL_STATE.settling);
+            },
+            onPanResponderTerminate: function onPanResponderTerminate() {
+                return null;
+            },
+            onPanResponderTerminationRequest: function onPanResponderTerminationRequest(evt, gestureState) {
+                return true;
+            }
+        });
+
+        _this._onPageScrollOnAndroid = _this._onPageScrollOnAndroid.bind(_this);
+        _this._onPageSelectedOnAndroid = _this._onPageSelectedOnAndroid.bind(_this);
+        _this._renderOnIOS = _this._renderOnIOS.bind(_this);
+        _this._onScrollOnIOS = _this._onScrollOnIOS.bind(_this);
+        _this._onScrollViewLayout = _this._onScrollViewLayout.bind(_this);
+        _this._childrenWithOverridenStyle = _this._childrenWithOverridenStyle.bind(_this);
+        _this._setScrollState = _this._setScrollState.bind(_this);
+        _this.setPageWithoutAnimation = _this.setPageWithoutAnimation.bind(_this);
+        _this.setPage = _this.setPage.bind(_this);
+        return _this;
+    }
+
+    babelHelpers.createClass(ViewPager, [{
+        key: 'render',
+        value: function render() {
+            return this.props.forceScrollView || _reactNative.Platform.OS === 'ios' ? this._renderOnIOS() : _react2.default.createElement(_reactNative.ViewPagerAndroid, babelHelpers.extends({}, this.props, {
+                scrollEnabled: this.props.horizontalScroll ? true : false,
+                ref: VIEWPAGER_REF,
+                onPageScroll: this._onPageScrollOnAndroid,
+                onPageSelected: this._onPageSelectedOnAndroid
+            }));
+        }
+    }, {
+        key: '_onPageScrollOnAndroid',
+        value: function _onPageScrollOnAndroid(e) {
+            if (this.props.onPageScroll) this.props.onPageScroll(e.nativeEvent);
+        }
+    }, {
+        key: '_onPageSelectedOnAndroid',
+        value: function _onPageSelectedOnAndroid(e) {
+            if (this.props.onPageSelected) this.props.onPageSelected(e.nativeEvent);
+        }
+    }, {
+        key: '_renderOnIOS',
+        value: function _renderOnIOS() {
+            var childrenCount = this.props.children ? this.props.children.length : 0;
+            var initialPage = Math.min(Math.max(0, this.props.initialPage), childrenCount - 1);
+            var needMonitorScroll = !!this.props.onPageScroll || !!this.props.onPageSelected || !!this.props.onPageScrollStateChanged;
+            var needMonitorTouch = !!this.props.onPageScrollStateChanged;
+            var props = babelHelpers.extends({}, this.props, {
+                ref: SCROLLVIEW_REF,
+                onLayout: this._onScrollViewLayout,
+                horizontal: true,
+                pagingEnabled: this.props.horizontalScroll ? true : false,
+                scrollsToTop: false,
+                showsHorizontalScrollIndicator: false,
+                showsVerticalScrollIndicator: false,
+                children: this._childrenWithOverridenStyle(),
+                contentOffset: { x: this.state.width * initialPage, y: 0 },
+                decelerationRate: 0.9,
+                onScroll: needMonitorScroll ? this._onScrollOnIOS : null,
+                scrollEventThrottle: needMonitorScroll ? this.props.onPageScroll ? 8 : 1 : 0
+            });
+            if (needMonitorTouch) props = babelHelpers.extends(props, this._panResponder.panHandlers);
+            var scrollViewStyle = {
+                overflow: 'visible',
+                marginHorizontal: -this.props.pageMargin / 2
+            };
+            if (this.props.style && !this.props.style.height) return _react2.default.createElement(_reactNative.ScrollView, babelHelpers.extends({}, props, { style: [this.props.style, scrollViewStyle] }));else return _react2.default.createElement(
+                _reactNative.View,
+                { style: this.props.style },
+                _react2.default.createElement(_reactNative.ScrollView, babelHelpers.extends({}, props, { style: scrollViewStyle }))
+            );
+        }
+    }, {
+        key: '_onScrollOnIOS',
+        value: function _onScrollOnIOS(e) {
+            var x = e.nativeEvent.contentOffset.x,
+                offset = void 0,
+                position = Math.floor(x / this.state.width);
+            if (x === this._preScrollX) return;
+            this._preScrollX = x;
+            offset = x / this.state.width - position;
+
+            if (this.props.onPageScroll) this.props.onPageScroll({ offset: offset, position: position });
+
+            if (this.props.onPageSelected && offset === 0) {
+                this.props.onPageSelected({ position: position });
+                this.props.onPageScrollStateChanged && this._setScrollState(SCROLL_STATE.idle);
+            }
+        }
+    }, {
+        key: '_onScrollViewLayout',
+        value: function _onScrollViewLayout(event) {
+            var _event$nativeEvent$la = event.nativeEvent.layout,
+                width = _event$nativeEvent$la.width,
+                height = _event$nativeEvent$la.height;
+
+            this.setState({ width: width, height: height });
+        }
+    }, {
+        key: '_childrenWithOverridenStyle',
+        value: function _childrenWithOverridenStyle() {
+            var _this2 = this;
+
+            if (this.state.width === 0 || this.state.height === 0) return null;
+            return _react2.default.Children.map(this.props.children, function (child) {
+                if (!child) return null;
+                var newProps = babelHelpers.extends({}, child.props, {
+                    style: [child.props.style, {
+                        width: _this2.state.width,
+                        height: _this2.state.height,
+                        position: null
+                    }],
+                    collapsable: false
+                });
+                if (child.type && child.type.displayName && child.type.displayName !== 'RCTView' && child.type.displayName !== 'View') {
+                    console.warn('Each ViewPager child must be a <View>. Was ' + child.type.displayName);
+                }
+                return _react2.default.createElement(child.type, newProps);
+            });
+        }
+    }, {
+        key: '_setScrollState',
+        value: function _setScrollState(scrollState) {
+            if (scrollState === this._scrollState) return;
+            this.props.onPageScrollStateChanged && this.props.onPageScrollStateChanged(scrollState);
+            this._scrollState = scrollState;
+        }
+    }, {
+        key: 'setPageWithoutAnimation',
+        value: function setPageWithoutAnimation(selectedPage) {
+            if (this.props.forceScrollView || _reactNative.Platform.OS === 'ios') this.refs[SCROLLVIEW_REF].scrollTo({ x: this.state.width * selectedPage, animated: false });else {
+                this.refs[VIEWPAGER_REF].setPageWithoutAnimation(selectedPage);
+                if (this.props.onPageSelected) this.props.onPageSelected({ position: selectedPage });
+            }
+        }
+    }, {
+        key: 'setPage',
+        value: function setPage(selectedPage) {
+            if (this.props.forceScrollView || _reactNative.Platform.OS === 'ios') this.refs[SCROLLVIEW_REF].scrollTo({ x: this.state.width * selectedPage });else {
+                this.refs[VIEWPAGER_REF].setPage(selectedPage);
+                if (this.props.onPageSelected) this.props.onPageSelected({ position: selectedPage });
+            }
+        }
+    }]);
+    return ViewPager;
+}(_react.Component);
+
+ViewPager.propTypes = babelHelpers.extends({}, _reactNative.ViewPagerAndroid.propTypes);
+ViewPager.defaultProps = {
+    initialPage: 0,
+    keyboardDismissMode: 'on-drag',
+    onPageScroll: null,
+    onPageSelected: null,
+    onPageScrollStateChanged: null,
+    pageMargin: 0
+};
+exports.default = ViewPager;
